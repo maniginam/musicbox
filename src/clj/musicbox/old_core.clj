@@ -142,7 +142,7 @@
 
 (defn build-model [{:keys [d h notes] :as params}]
   (let [r        (/ d 2)
-        params   (assoc params :r r)
+        params   (assoc params :radius r)
         pinpoints     (calc-pinpoints params)
         _        (prn "pins: " pinpoints)
         cyl (model/cylinder [1 0.1] 3)

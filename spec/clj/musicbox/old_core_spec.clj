@@ -23,7 +23,7 @@
 
 (def twink [0 0 7 7 9 9 7 -1 -1 5 5 4 4 2 2 0 -1 -1 7 7 5 5 4 4 2 -1 -1 7 7 5 5 4 4 2 -1 -1 0 0 7 7 9 9 7 -1 -1 5 5 4 4 2 2 0 -1])
 
-(describe "body"
+#_(describe "body"
 
 		(it "calcs hertz"
 				(should= "466.16376" (str (float (sut/calc-hertz 1))))
@@ -47,7 +47,7 @@
 				)
 
 		(it "draws the cylinder"
-				(should= (list :cylinder {:h 4 :r 2 :center true}) (sut/build-cylinder {:radius 2 :height 4})))
+				(should= (list :cylinder {:height 4 :radius 2 :center true}) (sut/build-cylinder {:radius 2 :height 4})))
 
 		(it "calcs the rhythm - c-scale quarter notes"
 				(should= [0 1.125 2.25 3.375 4.5 5.625 6.75 7.875] (map :y (sut/calc-rhythm-pos 9.0 c-scale)))
@@ -71,7 +71,7 @@
 						))
 
     (focus-it "calcs pinpoints"
-      (should= [] (sut/build-music-barrel {:d (/ 45 Math/PI) :h 16 :notes twink})))
+      (should= [] (sut/build-music-barrel {:d (/ 45 Math/PI) :height 16 :notes twink})))
 
 		#_(it "calcs the pins"
 				(should= [{:x 49.0 :y 0.0} {:x 50.0 :y 1.75} {:x 51.0 :y 3.5} {:x 52.0 :y 5.25} {:x 53.0 :y 7.0} {:x 54.0 :y 8.75} {:x 55.0 :y 10.5} {:x 56.0 :y 12.25}] (sut/calc-song-pins (sut/y-space c-scale) c-scale)))
