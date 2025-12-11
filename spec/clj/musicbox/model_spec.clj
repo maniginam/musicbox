@@ -16,7 +16,7 @@
 (describe "Model"
 
   (it "builds a musicbox"
-    (sut/build-model cyl))
+    (sut/build-barrel cyl))
 
   (it "calcs the main cylinder"
     (should= nil (sut/build-main-cylinder {}))

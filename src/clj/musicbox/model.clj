@@ -41,7 +41,7 @@
 (defn build-main-cylinder [{:keys [height radius] :as params}]
   (when-not (empty? params) (model/cylinder radius height)))
 
-(defn build-model [{:keys [circumference height] :as params}]
+(defn build-barrel [{:keys [circumference height] :as params}]
   (let [params (assoc params :radius (core/calc-radius circumference))
         barrel (build-main-cylinder params)
         pins   (build-pins params)
