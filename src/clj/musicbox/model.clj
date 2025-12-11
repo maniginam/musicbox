@@ -10,22 +10,24 @@
       #_(core/calc-pin-coordinates params)
       [[7.16197243913529 0 -6.5] [7.11354574363979 0.831454251343799 -6.5] [6.96892054513466 1.65166451028454 0.5] [6.73005265132749 2.44953884012754 0.5] [6.40017234070798 3.21428735930222 2.5] [5.98374067857291 3.93556815600051 2.5]])))
 
-(defn build-main-cylinder [{:keys [height circumference] :as params}]
-  (when-not (empty? params)
-    (let [r (core/calc-radius circumference)]
-      (model/cylinder r height))))
+(def pin-rotation-rads (/ Math/PI 2))
 
-(defn build-pins [params]
-  (let [body (model/cylinder [1 0.1] 3)]
-    (map #(when-not (empty? %) (model/translate %1 (model/rotate [0 (* (/ Math/PI 2) (second %)) 0] body)))
-      [[7.16197243913529 0 -6.5] [7.11354574363979 0.831454251343799 -6.5] [6.96892054513466 1.65166451028454 0.5] [6.73005265132749 2.44953884012754 0.5] [6.40017234070798 3.21428735930222 2.5] [5.98374067857291 3.93556815600051 2.5]])))
+(defn rotate-X [rads] (* pin-rotation-rads (Math/cos rads)))
+(defn rotate-Y [rads] (* pin-rotation-rads (Math/sin rads)))
 
-(defn ten-percent-of [n] (* 0.1 n))
-(defn plus-ten-percent [& n] (apply * 1.1 n))
+(defn rotate-pin [pin rads]
+  (when (seq pin)
+    (model/rotate [(rotate-X rads) (rotate-Y rads) pin-rotation-rads] pin)))
+
+(defn build-pins [{:keys [notes] :as params}]
+  (let [pin       (model/cylinder [0.5 0.1] 2)
+        rads      (core/calc-radians notes)
+        pin-coors (core/calc-pinpoint-coordinates (assoc params :rads rads))]
+    (->> rads (map #(rotate-pin pin %)) (map model/translate pin-coors))))
 
 (defn build-head-with-divot [{:keys [height half-height radius]} divot-pos z-pos]
-  (let [divot-y     (plus-ten-percent divot-pos half-height)
-        head-height (ten-percent-of height)]
+  (let [divot-y     (core/plus-ten-percent divot-pos half-height)
+        head-height (core/ten-percent-of height)]
     [(model/extrude-rotate (model/translate [1 divot-y 0] (model/circle 1)))
      (model/translate [0 0 (* z-pos half-height)] (model/cylinder (* 0.75 radius) head-height))]))
 
@@ -36,11 +38,14 @@
           lower-head (build-head-with-divot params -1 1)]
       (apply model/union (concat upper-head lower-head)))))
 
-(defn build-model [{:keys [circumference] :as params}]
+(defn build-main-cylinder [{:keys [height radius] :as params}]
+  (when-not (empty? params) (model/cylinder radius height)))
+
+(defn build-model [{:keys [circumference height] :as params}]
   (let [params (assoc params :radius (core/calc-radius circumference))
         barrel (build-main-cylinder params)
         pins   (build-pins params)
         heads  (build-heads params)]
-    (->> (model/union barrel pins heads)
+    (->> (model/union barrel heads pins)
       scad/write-scad
       (spit "scads/musicbox.scad"))))

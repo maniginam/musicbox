@@ -1,12 +1,12 @@
 (ns musicbox.core)
 
 (def rads-in-circle (* 2 Math/PI))
-
 (defn calc-diameter [c] (/ c Math/PI))
-
 (defn calc-radius [c] (-> (calc-diameter c) (/ 2)))
 
-(defn z-start [height num-teeth] (-> height (- num-teeth) (/ 2.0) (* -1)))
+(defn ten-percent-of [n] (* 0.1 n))
+(defn plus-ten-percent [& n] (apply * 1.1 n))
+(defn z-start [{:keys [height num-teeth tooth-width]}] (-> height (- (* num-teeth tooth-width)) (/ 2.0) (- (ten-percent-of height)) (* -1)))
 
 (defn calc-radians-per-mm [notes]
   (let [num-notes (count notes)]
@@ -17,11 +17,9 @@
     (let [num-notes (count notes)]
       (->> (map #(* % rads-per-mm) (range num-notes)) (map float) vec))))
 
-(defn calc-coordinates-of-a-single-pin [{:keys [radius height z-start]} radian note]
+(defn calc-coordinates-of-a-single-pin [{:keys [radius]} z-start radian note]
   [(* radius (Math/cos radian)) (* radius (Math/sin radian)) (- note z-start)])
 
-(defn calc-pinpoint-coordinates [{:keys [circumference height num-teeth notes] :as params}]
-  (let [radius (calc-radius circumference)
-        radians (calc-radians notes)
-        z-start (z-start height num-teeth)]
-    (map (partial calc-coordinates-of-a-single-pin  (assoc params :radius radius :z-start z-start)) radians notes)))
+(defn calc-pinpoint-coordinates [{:keys [rads notes] :as params}]
+  (let [z-start (z-start params)]
+    (map (partial calc-coordinates-of-a-single-pin params z-start) rads notes)))
