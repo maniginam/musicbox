@@ -6,19 +6,6 @@
 (def twinkle [0 0 7 7 9 9 7 -1 -1 5 5 4 4 2 2 0 -1 -1 7 7 5 5 4 4 2 -1 -1 7 7 5 5 4 4 2 -1 -1 0 0 7 7 9 9 7 -1 -1 5 5 4 4 2 2 0 -1 -1])
 (def c-scale [0	2	4	5	7	9	11 12])
 
-(def circumference 45)
-(def height 17)
-(def teeth 16)
-(def tooth-width1)
-
-;Diameter	14.32394488
-;Radius	7.161972439
-;Note Counts	54
-;Z-start	1
-;Turn	0.833333333
-;radians/mm	0.116355283
-;mm/radian	7.161972439
-
 (describe "Musicbox"
 
   (context "calcs"
@@ -34,11 +21,11 @@
       (should= (/ Math/PI 2) (sut/calc-radius (* Math/PI Math/PI))))
 
     (it "calcs z-start"
-      (should= -0.5 (sut/z-start {:height 10 :num-teeth 9 :tooth-width 1}))
-      (should= -1.0 (sut/z-start {:height 10 :num-teeth 8 :tooth-width 1}))
-      (should= -0.5 (sut/z-start {:height 20 :num-teeth 19 :tooth-width 1}))
-      (should= -1.0 (sut/z-start {:height 20 :num-teeth 18 :tooth-width 1}))
-      (should= -0.5 (sut/z-start {:height 17 :num-teeth 16 :tooth-width 1})))
+      (should= 0.5 (sut/z-start {:height 10 :num-teeth 9 :tooth-width 1}))
+      (should= 0.0 (sut/z-start {:height 10 :num-teeth 8 :tooth-width 1}))
+      (should= 1.5 (sut/z-start {:height 20 :num-teeth 19 :tooth-width 1}))
+      (should= 1.0 (sut/z-start {:height 20 :num-teeth 18 :tooth-width 1}))
+      (should= 1.2000000000000002 (sut/z-start {:height 17 :num-teeth 16 :tooth-width 1})))
 
     (it "radians/mm"
       (should= nil (sut/calc-radians-per-mm  []))
@@ -63,7 +50,7 @@
   (it "calcs all pin coordinates"
     (should= [] (sut/calc-pinpoint-coordinates {:height 0 :radius (sut/calc-radius 10) :num-teeth 16 :tooth-width 1 :rads [] :notes []}))
     (should= [[1.5915494309189535 0.0 -8.0]] (sut/calc-pinpoint-coordinates {:height 0 :radius (sut/calc-radius 10) :num-teeth 16 :tooth-width 1 :rads (sut/calc-radians [0]) :notes [0]}))
-    (should= [[7.16197243913529 0.0 0.5] [5.064279167700377 5.064279389067064 2.5] [-3.130597704696325E-7 7.161972439135284 4.5] [-5.0642793085791835 5.064279248188258 5.5] [-7.161972439135264 -6.261195409392644E-7 7.5] [-5.064279630530695 -5.0642789262367245 9.5] [8.540566515730392E-8 -7.16197243913529 11.5] [5.064278543894234 -5.064280012873102 12.5]]
+    (should= [[7.16197243913529 0.0 -1.2000000000000002] [5.064279167700377 5.064279389067064 0.7999999999999998] [-3.130597704696325E-7 7.161972439135284 2.8] [-5.0642793085791835 5.064279248188258 3.8] [-7.161972439135264 -6.261195409392644E-7 5.8] [-5.064279630530695 -5.0642789262367245 7.8] [8.540566515730392E-8 -7.16197243913529 9.8] [5.064278543894234 -5.064280012873102 10.8]]
       (sut/calc-pinpoint-coordinates {:height 17 :radius (sut/calc-radius 45) :num-teeth 16 :tooth-width 1 :rads (sut/calc-radians c-scale) :notes c-scale}))
     )
   )

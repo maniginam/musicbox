@@ -1,5 +1,6 @@
 (ns musicbox.model
   (:require [musicbox.core :as core]
+            [musicbox.box :as box]
             [scad-clj.model :as model]
             [scad-clj.scad :as scad]))
 
@@ -42,10 +43,11 @@
   (when-not (empty? params) (model/cylinder radius height)))
 
 (defn build-barrel [{:keys [circumference height] :as params}]
-  (let [params (assoc params :radius (core/calc-radius circumference))
+  (let [params (-> (assoc params :radius (core/calc-radius circumference)) box/add-box-dimensions)
         barrel (build-main-cylinder params)
         pins   (build-pins params)
-        heads  (build-heads params)]
-    (->> (model/union barrel heads pins)
+        heads  (build-heads params)
+        bottom (box/build-bottom params)]
+    (->> (model/union barrel heads pins bottom)
       scad/write-scad
-      (spit "scads/musicbox.scad"))))
+      (spit "scads/musicbox-box.scad"))))
